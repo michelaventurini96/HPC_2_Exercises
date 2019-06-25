@@ -1,0 +1,14 @@
+pi = 3.141593
+Time of execution: 0.467937
+pi = 3.141593
+Time of execution: 0.120466
+pi = 3.141593
+Time of execution: 0.063983
+pi = 3.141593
+Time of execution: 0.033979
+pi = 3.141593
+Time of execution: 0.027212
+pi = 3.141593
+Time of execution: 0.017073
+pi = 3.141593
+Time of execution: 0.013960
