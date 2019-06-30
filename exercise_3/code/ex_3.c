@@ -38,7 +38,7 @@ int main(int argc, char * argv[])
   double local_b = local_a + local_n*h;
   double local_res = local_sum(local_a, local_b, h);
 
-  //Consolidate and Sum Results int the root (npes-1)
+  //Consolidate and Sum Results in the proc npes-1
   MPI_Reduce(&local_res, &global_res, 1, MPI_DOUBLE, MPI_SUM, npes-1, MPI_COMM_WORLD);
 
   //the last process send the result to the first one

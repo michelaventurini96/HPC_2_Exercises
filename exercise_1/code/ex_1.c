@@ -1,4 +1,3 @@
-//ex_1: approximate pi by using the given formula
 #include<stdlib.h>
 #include <stdio.h>
 #include <omp.h>
@@ -8,14 +7,11 @@ double func (double x){
 }
 
 double local_sum(double local_a, double local_b, double h){
-  //printf("in local_sum, local_A = %f, local_b=%f, h = %f\n", local_a, local_b, h);
   double midpoint = local_a+h/2;
   double local_res = 0;
   while (midpoint<local_b) {
-	//printf("in while");
     midpoint +=h;
     local_res += h*func(midpoint);
-    //printf("local res = %f\n", local_res );
   }
   return local_res;
 }
@@ -32,18 +28,18 @@ int main()
   double start = omp_get_wtime();
   double pi  = local_sum(a, b, h);
   double end = omp_get_wtime();
-  printf("pi = %f, time = %f \n",end-start);
+  printf("pi = %f, time = %f \n",pi, end-start);
 
   // ATOMIC
   printf("Atomic execution\n");
   global_res = 0;
-  double start=omp_get_wtime();
+  start=omp_get_wtime();
   #pragma omp parallel
   {
    
     int t_id = omp_get_thread_num();
     int n_threads = omp_get_num_threads();
-    printf("%d\n", n_threads);
+    //printf("%d\n", n_threads);
 
     int local_n = n/n_threads;
     double local_a = a+t_id*local_n*h;
@@ -53,8 +49,8 @@ int main()
     global_res += local_s;
   }
 
-  double end = omp_get_wtime();
-  double pi = 4*global_res;
+  end = omp_get_wtime();
+  pi = 4*global_res;
   printf("pi= %f, with time %f s\n", pi, end-start);
 
   //CRITICAL
@@ -65,7 +61,7 @@ int main()
   {
     int t_id = omp_get_thread_num();
     int n_threads = omp_get_num_threads();
-    printf("%d\n", n_threads);
+    //printf("%d\n", n_threads);
 
     int local_n = n/n_threads;
     double local_a = a+t_id*local_n*h;
@@ -91,7 +87,7 @@ int main()
    
     int t_id = omp_get_thread_num();
     int n_threads = omp_get_num_threads();
-    printf("%d\n", n_threads);
+    //printf("%d\n", n_threads);
 
     int local_n = n/n_threads;
     double local_a = a+t_id*local_n*h;

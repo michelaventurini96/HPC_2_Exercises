@@ -12,7 +12,7 @@
 \maketitle
 
 \section{Compute \texttt{pi} by using OpenMP}
-The aim of the exercice is to approximate the value of pi using the midpoint formula. The code is implemented both in serial and then parallelized by using OpenMP.\\ The parallel code is implemented in three versions that exploit three different methods to avoid the \textit{race conditions} that may be caused by a critical section of the code.
+The aim of the exercice is to approximate the value of pi using the \textit{midpoint formula}. The code is implemented both in serial and then parallelized by using OpenMP.\\ The parallel code is implemented in three versions that exploit three different methods to avoid the \textit{race conditions} that may be caused by a critical section of the code.
 \begin{itemize}
 \item[\textbf{atomic}] The first implementation uses the \texttt{atomic} directive that prevents race conditions by enabling mutual exclusion for simple operation. It only protect read/update of target location. Where available, it takes advantage on the hardware providing an atomic increment operation so an atomic operation has much lower overhead with respect to the other solutions.
 \item[\textbf{critical}] The second implementation uses the \texttt{critical} directive. It ensures that threads have mutually-exclusive access to a block of code and serialize the execution of the block. This directive is implemented in software and it is more expensive than the first solution but it is necessary if the target is to protect blocks of code involving more than one operation. 

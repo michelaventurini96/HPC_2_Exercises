@@ -1,0 +1,40 @@
+Serial execution
+pi = 0.785398, time = 0.413444 
+Atomic execution
+pi= 3.141593, with time 0.405336 s
+Critical execution
+pi= 3.141593, with time 0.402361 s
+Reduction execution
+pi= 3.141593, with time 0.402970 s
+Serial execution
+pi = 0.785398, time = 0.402300 
+Atomic execution
+pi= 3.141593, with time 0.104355 s
+Critical execution
+pi= 3.141593, with time 0.104930 s
+Reduction execution
+pi= 0.874676, with time 0.104406 s
+Serial execution
+pi = 0.785398, time = 0.403053 
+Atomic execution
+pi= 3.141593, with time 0.055930 s
+Critical execution
+pi= 3.141593, with time 0.055784 s
+Reduction execution
+pi= 0.455168, with time 0.055529 s
+Serial execution
+pi = 0.785398, time = 0.402815 
+Atomic execution
+pi= 3.141593, with time 0.029703 s
+Critical execution
+pi= 3.141593, with time 0.029442 s
+Reduction execution
+pi= 0.243972, with time 0.029646 s
+Serial execution
+pi = 0.785398, time = 0.405805 
+Atomic execution
+pi= 3.141593, with time 0.064058 s
+Critical execution
+pi= 3.141593, with time 0.063067 s
+Reduction execution
+pi= 0.156782, with time 0.065863 s
