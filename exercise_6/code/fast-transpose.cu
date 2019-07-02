@@ -55,7 +55,7 @@ __host__ void computeTransposeHost(float* odata, const float* const h_idata,
 
 __global__ void transposeCoalesced(float *odata, const float *const idata, const int width,
     const int height){
-  __shared__ float tile[TILE_DIM][TILE_DIM+1]; //padding so different threads access different shared memory banks
+  __shared__ float tile[TILE_DIM][TILE_DIM+1]; //padding so different threads access different shared memory banks and no bottleneck
 
   int xIndex = blockIdx.x*TILE_DIM + threadIdx.x;
   int yIndex = blockIdx.y*TILE_DIM + threadIdx.y;
@@ -65,7 +65,7 @@ __global__ void transposeCoalesced(float *odata, const float *const idata, const
   yIndex = blockIdx.x * TILE_DIM + threadIdx.y;
   int index_out = xIndex + (yIndex)*height;
 
-  for (int i=0; i<TILE_DIM; i+=BLOCK_ROWS) {
+  for (int i=0; i<TILE_DIM; i+=BLOCK_ROWS) { // use a tile like a buffer to transpose blocks
       tile[threadIdx.y+i][threadIdx.x] = idata[index_in+i*width];
   }
 

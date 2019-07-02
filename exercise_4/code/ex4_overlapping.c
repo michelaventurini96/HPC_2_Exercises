@@ -65,7 +65,7 @@ int main(int argc, char * argv[]){
 
   unsigned int N = argc<2 ? 10 : atoi(argv[1]);
 
-  unsigned int SIZE = N*N;
+  unsigned int SIZE = N*N; // total size of squared matrix
   int rank, npes;
 
   MPI_Init( &argc, &argv );
@@ -73,10 +73,10 @@ int main(int argc, char * argv[]){
   MPI_Comm_rank( MPI_COMM_WORLD, &rank ); // rank store the MPI identifier of the process
   MPI_Comm_size( MPI_COMM_WORLD, &npes ); // npes store the number of MPI processes
 
-  //each process calculates its local nuber of elements
+  // each process calculates its local nuber of elements
   unsigned int local_n = SIZE/npes;
-  int rest=SIZE%npes;
-  unsigned int current_n = local_n + (rank<rest);
+  int rest = SIZE%npes;
+  unsigned int current_n = local_n + (rank<rest); // local nuber of cells to initialize
   
   int* local_m = (int*) calloc(current_n, sizeof(int));
   initLocalMatrix(local_m, rank, current_n, N, npes);
@@ -86,9 +86,10 @@ int main(int argc, char * argv[]){
   
   if(N<=10){
 
+    // if the process is not the root it just sends  the local matrix initialized
     if (rank) MPI_Send(local_m, current_n, MPI_INT, 0, 101, MPI_COMM_WORLD);
 
-    else{
+    else{ // the root receives and prints the local matrix as it arrives without storing it
 
       int* buffer1 = local_m;
       int* buffer2 = (int*) calloc(current_n, sizeof(int));
@@ -122,7 +123,7 @@ int main(int argc, char * argv[]){
 
     if (rank) MPI_Send(local_m, local_n, MPI_INT, 0, 101, MPI_COMM_WORLD);
 
-    else{
+    else{ // the root process stores the matrix in a binary file as it arrives
 
       FILE* m_file; char* fileName = "ex4_mtx.dat";
       m_file = fopen(fileName,"wb");
@@ -157,7 +158,7 @@ int main(int argc, char * argv[]){
       free(buffer1); free(buffer2);
       fclose(m_file);
       
-      checkMatrix(N, fileName);
+      checkMatrix(N, fileName); // check the size of the matrix
     }
   }
 
