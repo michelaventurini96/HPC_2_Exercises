@@ -3,8 +3,7 @@ CC = /usr/bin/mpicc.mpich #my pc
 CC1 = mpicc #for other users
 CXXFLAGS = -Wall -Wextra
 
-SRC= ex5_sequential.c \
-		 ex5_overlapping.c
+SRC= ex5_overlapping.c
 
 EXE = $(SRC:.c=.x)
 

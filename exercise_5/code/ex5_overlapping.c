@@ -31,7 +31,6 @@ void printVector(const int* const vect, const size_t n){
 int main(int argc, char * argv[])
 {
   int rank, npes; // identifier of the process and total number of processes
-  double startwtime, endwtime;
   
   MPI_Init( &argc, &argv ); // initialize session
 
