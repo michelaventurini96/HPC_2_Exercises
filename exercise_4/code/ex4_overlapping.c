@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <mpi.h>
 #include <math.h>
-
+// routine to obtain global index
 size_t globalIdx(const unsigned int n, const int npes, const int rank){
   int elems = (n*n)/npes;
   int rest = (n*n)%npes;
@@ -89,7 +89,7 @@ int main(int argc, char * argv[]){
     // if the process is not the root it just sends  the local matrix initialized
     if (rank) MPI_Send(local_m, current_n, MPI_INT, 0, 101, MPI_COMM_WORLD);
 
-    else{ // the root receives and prints the local matrix as it arrives without storing it
+    else{ // the root receives and prints the local matrix as it arrives
 
       int* buffer1 = local_m;
       int* buffer2 = (int*) calloc(current_n, sizeof(int));
@@ -102,12 +102,12 @@ int main(int argc, char * argv[]){
 
       MPI_Irecv(receiving_buffer, local_n + (1<rest), MPI_INT, 1, 101, MPI_COMM_WORLD, &request);
       printPartialMatrix(writing_buffer, N, rank, npes);
-      MPI_Wait(&request, &status);
+      MPI_Wait(&request, &status); // block till the end of Irecv
 
       for (int i = 1; i < npes-1; i++) {
 
         swap(&receiving_buffer, &writing_buffer);
-        current_n = local_n+((i+1)<rest);
+        current_n = local_n+((i+1)<rest); // modify size in case of rest
 
         MPI_Irecv(receiving_buffer, current_n, MPI_INT, i+1, 101, MPI_COMM_WORLD, &request);
         printPartialMatrix(writing_buffer, N, i, npes);

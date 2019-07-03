@@ -12,11 +12,13 @@ void swapPointers(int** const a, int** const b){
     *b = t;
 }
 
+// routine to fill a vector with value val
 void fillVector(int* vec, const int val, const size_t n){
   for (size_t i = 0; i < n; i++)
     vec[i] = val;
 }
 
+// routine to sum up two vectors
 void sumVector(int* const vec1, const int* const vec2, const size_t n){
   for (size_t i = 0; i < n; i++)
     vec1[i]+=vec2[i];

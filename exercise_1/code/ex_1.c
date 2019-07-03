@@ -2,10 +2,12 @@
 #include <stdio.h>
 #include <omp.h>
 
+// function to be evaluated
 double func (double x){
   return (1/(1+(x*x)));
 }
 
+// local integral
 double local_sum(double local_a, double local_b, double h){
   double midpoint = local_a+h/2;
   double local_res = 0;
@@ -19,16 +21,16 @@ double local_sum(double local_a, double local_b, double h){
 int main()
 {
   int n = 100000000;
-  double  a=0, b=1;
+  double  a=0, b=1; // interval of integration
   double global_res = 0;
-  double h = (b-a)/n;
+  double h = (b-a)/n; // step
 
   //SERIAL
   printf("Serial execution\n");
   double start = omp_get_wtime();
   double pi  = local_sum(a, b, h);
   double end = omp_get_wtime();
-  printf("pi = %f, time = %f \n",pi, end-start);
+  printf("pi = %f, time = %f \n",pi, end-start); // walltime 
 
   // ATOMIC
   printf("Atomic execution\n");
@@ -36,15 +38,14 @@ int main()
   start=omp_get_wtime();
   #pragma omp parallel
   {
-   
     int t_id = omp_get_thread_num();
     int n_threads = omp_get_num_threads();
-    //printf("%d\n", n_threads);
 
     int local_n = n/n_threads;
     double local_a = a+t_id*local_n*h;
     double local_b = local_a + local_n*h;
     double local_s = local_sum(local_a, local_b, h);
+    
     #pragma omp atomic
     global_res += local_s;
   }
@@ -67,6 +68,7 @@ int main()
     double local_a = a+t_id*local_n*h;
     double local_b = local_a + local_n*h;
     double local_s = local_sum(local_a, local_b, h);
+    
     #pragma omp critical 
     {
       global_res += local_s;

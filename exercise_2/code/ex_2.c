@@ -9,7 +9,6 @@ void print_usage( int * a, int N, int nthreads ) {
     fprintf( stdout, "%d: ", tid );
 
     for( i = 0; i < N; ++i ) {
-
       if( a[ i ] == tid) fprintf( stdout, "*" );
       else fprintf( stdout, " ");
     }

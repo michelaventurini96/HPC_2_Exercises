@@ -17,6 +17,7 @@
 // Number of repetitions used for timing.
 #define NUM_REPS 100
 
+// routine to print the matrix on the host
 __host__ void printMatrix(const float* const data, const size_t size_x, const size_t size_y, const size_t a, const size_t b){
   for(size_t i=0; i<a; i++){
   	printf("%5.2f ", data[i]);
@@ -24,6 +25,7 @@ __host__ void printMatrix(const float* const data, const size_t size_x, const si
   printf("\n");
 }
 
+// routine to check results
 __host__ int compareRes(const float* const odata, const float* const gold, const size_t msize){
   int res = 0;
   for(size_t i = 0; i<msize; i++){
@@ -32,6 +34,7 @@ __host__ int compareRes(const float* const odata, const float* const gold, const
   return res;
 }
 
+// naive transpose 
 __global__ void transposeNaive(float *odata, const float* const idata,
     const int width, const int height) {
   int xIndex = blockIdx.x*TILE_DIM + threadIdx.x;
@@ -44,6 +47,7 @@ __global__ void transposeNaive(float *odata, const float* const idata,
     }
 }
 
+// naive transpose on host to check results
 __host__ void computeTransposeHost(float* odata, const float* const h_idata,
     const int size_x, const int size_y){
   for (size_t i = 0; i < size_x; i++) {
@@ -53,6 +57,7 @@ __host__ void computeTransposeHost(float* odata, const float* const h_idata,
   }
 }
 
+// transpose with coalesced memory and padding
 __global__ void transposeCoalesced(float *odata, const float *const idata, const int width,
     const int height){
   __shared__ float tile[TILE_DIM][TILE_DIM+1]; //padding so different threads access different shared memory banks and no bottleneck
@@ -65,11 +70,15 @@ __global__ void transposeCoalesced(float *odata, const float *const idata, const
   yIndex = blockIdx.x * TILE_DIM + threadIdx.y;
   int index_out = xIndex + (yIndex)*height;
 
+  // each thread copy more than one memory location. The overhead of index calculation is amortized over threads
+
   for (int i=0; i<TILE_DIM; i+=BLOCK_ROWS) { // use a tile like a buffer to transpose blocks
       tile[threadIdx.y+i][threadIdx.x] = idata[index_in+i*width];
   }
 
-  __syncthreads();
+  __syncthreads(); // to ensure threads have finished to copy from idata to tile
+
+  // access shared memory noncontiguously to access odata contiguously
   for (int i=0; i<TILE_DIM; i+=BLOCK_ROWS) {
       odata[index_out+i*height] = tile[threadIdx.x][threadIdx.y+i];
   }
@@ -84,7 +93,7 @@ int main( int argc, char** argv) {
 // execution configuration parameters
   dim3 grid(size_x/TILE_DIM, size_y/TILE_DIM), threads(TILE_DIM,BLOCK_ROWS);
   
-// CUDA events
+// CUDA events for timing
   cudaEvent_t start, stop;
   
 // size of memory required to store the matrix
@@ -102,7 +111,7 @@ int main( int argc, char** argv) {
   
 // initalize host data
   for(int i = 0; i < (size_x*size_y); ++i) 
-	h_idata[i] = (float) i;
+	  h_idata[i] = (float) i;
   printf("Initial matrix:\n");
   printMatrix(h_idata, size_x, size_y, 10, 10);
  
@@ -127,7 +136,7 @@ int main( int argc, char** argv) {
 
 //*********************************time transposeNaive*************************************
   cudaEventRecord(start, 0);
-  for (int i=0; i < NUM_REPS; i++) {
+  for (int i=0; i < NUM_REPS; i++) { // repeate timing to obtain a more precise bandwidth
     transposeNaive<<<grid, threads>>>(d_odata, d_idata,size_x,size_y);
   }
   cudaEventRecord(stop, 0);

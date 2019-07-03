@@ -4,12 +4,12 @@
 #include <math.h>
 
 size_t globalIdx(const unsigned int n, const int npes, const int rank){
-  int elems = (n*n)/npes;
-  int rest = (n*n)%npes;
+  int elems = (n*n)/npes; // elements per process
+  int rest = (n*n)%npes; // rest
   
   size_t global_i = 0;
 
-  for(int i=0; i<rank; i++)
+  for(int i=0; i<rank; i++) // calculate global index by summing up element for each process before
     global_i += (elems + (i<rest));
 
   return global_i;
@@ -22,7 +22,7 @@ void printPartialMatrix(const int* const matrix, const unsigned int n, const int
   for (int i = 0; i < elems; i++) {
       printf("%d ", matrix[i]);
       int res=(global_i+1)%n;
-      if( res==0 && global_i!=0 ) printf("\n");
+      if( res==0 && global_i!=0 ) printf("\n"); // if the element in the global matrix is the last of the row \n
       global_i++;
   }
 }
@@ -35,6 +35,7 @@ void printAllMatrix(const int* const matrix, const unsigned int n){
   }
 }
 
+// routine to check correctness of the matrix
 void checkMatrix(const unsigned int n, const char* const fileName){
   int* m = (int*) calloc(sizeof(int),(n*n));
   FILE* m_file;
@@ -45,11 +46,12 @@ void checkMatrix(const unsigned int n, const char* const fileName){
   fclose(m_file);
 }
 
+// initialize local matrix
 void initLocalMatrix(int *m, const int rank, const unsigned int local_elems, const unsigned int n, int npes){
   size_t global_i = globalIdx(n, npes, rank);
 
   for (unsigned int i = 0; i < local_elems; i++){
-    if (i+global_i==0 || (i+global_i)%(n+1)==0) m[i] = 1;
+    if (i+global_i==0 || (i+global_i)%(n+1)==0) m[i] = 1; // if global index==0 or global index/(row+1)==0 put 1
   }
 }
 
@@ -75,7 +77,7 @@ int main(int argc, char * argv[]){
 
   if(N<=10){
     if (rank) MPI_Send(local_m, local_n, MPI_INT, 0, 101, MPI_COMM_WORLD);
-    else{
+    else{ // the root process receives the partial matrices and prints as arrive without storing the entire matrix
       printPartialMatrix(local_m, N, rank, npes);
 
       for (int i = 1; i < npes; i++) {
